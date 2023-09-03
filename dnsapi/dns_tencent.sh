@@ -52,7 +52,7 @@ dns_tencent_rm() {
     if [ -z "$record_id" ]; then
       _debug "Due to TencentCloud API synchronization delay, record not found, waiting 10 seconds and retrying"
       _sleep 10
-      attempt=$((attempt + 1))
+      attempt=$(_math "$attempt + 1")
     fi
   done
 
@@ -150,7 +150,7 @@ tencent_sha256() {
 tencent_hmac_sha256() {
   k=$1
   shift
-  hex_key=$(_ascii_hex "$k" | tr -d ' ')
+  hex_key=$(echo -n "$k" | _hex_dump)
   printf %b "$@" | _hmac sha256 "$hex_key" hex
 }
 
@@ -162,7 +162,7 @@ tencent_hmac_sha256_hexkey() {
 
 tencent_signature_v3() {
   service=$1
-  action=$(echo "$2" | tr '[:upper:]' '[:lower:]')
+  action=$(echo "$2" | _lower_case)
   payload=${3:-'{}'}
   timestamp=${4:-$(date +%s)}
 
