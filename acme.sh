@@ -647,18 +647,18 @@ _ascii_hex() {
 #input:"abc"
 #output: " 61 62 63"
 _hex_dump() {
+  input=$(cat)
   if _exists od; then
-    od -A n -v -t x1 | tr -s " " | sed 's/ $//' | tr -d "\r\t\n"
+    echo "$input" | od -A n -v -t x1 | tr -s " " | sed 's/ $//' | tr -d "\r\t\n"
   elif _exists hexdump; then
     _debug3 "using hexdump"
-    hexdump -v -e '/1 ""' -e '/1 " %02x" ""'
+    echo "$input" | hexdump -v -e '/1 ""' -e '/1 " %02x" ""'
   elif _exists xxd; then
     _debug3 "using xxd"
-    xxd -ps -c 20 -i | sed "s/ 0x/ /g" | tr -d ",\n" | tr -s " "
+    echo "$input" | xxd -ps -c 20 -i | sed "s/ 0x/ /g" | tr -d ",\n" | tr -s " "
   else
     _debug3 "using _ascii_hex"
-    str=$(cat)
-    _ascii_hex "$str"
+    _ascii_hex "$input"
   fi
 }
 
