@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-set -x
 Tencent_API="https://dnspod.tencentcloudapi.com"
 
 #Tencent_SecretId="AKIDz81d2cd22cdcdc2dcd1cc1d1A"
@@ -151,7 +150,7 @@ tencent_sha256() {
 tencent_hmac_sha256() {
   k=$1
   shift
-  hex_key=$(printf "%s" "$k" | od -A n -v -t x1 | tr -d ' \n')
+  hex_key=$(printf "%s" "$k" | _hex_dump)
   printf %b "$@" | _hmac sha256 "$hex_key" hex
 }
 
