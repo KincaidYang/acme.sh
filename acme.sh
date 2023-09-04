@@ -649,13 +649,13 @@ _ascii_hex() {
 _hex_dump() {
   input=$(cat)
   if _exists od; then
-    echo "$input" | od -A n -v -t x1 | tr -s " " | sed 's/ $//' | tr -d "\r\t\n"
+    printf "%s" "$input" | od -A n -v -t x1 | tr -s " " | sed 's/ $//' | tr -d "\r\t\n"
   elif _exists hexdump; then
     _debug3 "using hexdump"
-    echo "$input" | hexdump -v -e '/1 ""' -e '/1 " %02x" ""'
+    printf "%s" "$input" | hexdump -v -e '/1 ""' -e '/1 " %02x" ""'
   elif _exists xxd; then
     _debug3 "using xxd"
-    echo "$input" | xxd -ps -c 20 -i | sed "s/ 0x/ /g" | tr -d ",\n" | tr -s " "
+    printf "%s" "$input" | xxd -ps -c 20 -i | sed "s/ 0x/ /g" | tr -d ",\n" | tr -s " "
   else
     _debug3 "using _ascii_hex"
     _ascii_hex "$input"
