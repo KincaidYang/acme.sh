@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -x
 Tencent_API="https://dnspod.tencentcloudapi.com"
 
 #Tencent_SecretId="AKIDz81d2cd22cdcdc2dcd1cc1d1A"
