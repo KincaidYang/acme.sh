@@ -151,7 +151,7 @@ tencent_sha256() {
 tencent_hmac_sha256() {
   k=$1
   shift
-  hex_key=$(printf "%s" "$k" | od -A n -v -t x1 | tr -d ' \n')
+  hex_key=$(printf "%s" "$k" | hexdump -v -e '/1 ""' -e '/1 " %02x" ""' | tr -d ' \n')
   printf %b "$@" | _hmac sha256 "$hex_key" hex
 }
 
