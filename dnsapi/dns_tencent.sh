@@ -184,7 +184,8 @@ tencent_signature_v3() {
   credentialScope="$date/$service/tc3_request"
   stringToSign="$algorithm\n$timestamp\n$credentialScope\n$(tencent_sha256 "$canonicalRequest")"
 
-  secretDate=$(tencent_hmac_sha256 "TC3$secretKey" "$date")
+  hex_key=$(printf %b "TC3$secretKey" | _hex_dump | tr -d ' ')
+  secretDate=$(printf %b "$date" | _hmac sha256 "$hex_key" hex)
   secretService=$(tencent_hmac_sha256_hexkey "$secretDate" "$service")
   secretSigning=$(tencent_hmac_sha256_hexkey "$secretService" 'tc3_request')
   signature=$(tencent_hmac_sha256_hexkey "$secretSigning" "$stringToSign")
