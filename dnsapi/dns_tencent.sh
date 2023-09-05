@@ -11,6 +11,16 @@ echo "Machine Hardware: $(uname -m)"
 echo "Processor: $(uname -p)"
 echo "Hardware Platform: $(uname -i)"
 echo "Operating System: $(uname -o)"
+
+if command -v lsb_release >/dev/null 2>&1; then
+  echo "Distribution Information:"
+  echo "Distributor ID: $(lsb_release -i | cut -f2)"
+  echo "Description: $(lsb_release -d | cut -f2)"
+  echo "Release: $(lsb_release -r | cut -f2)"
+  echo "Codename: $(lsb_release -c | cut -f2)"
+else
+  echo "lsb_release command not found. Distribution information not available."
+fi
 #Usage: dns_tencent_add   _acme-challenge.www.domain.com   "XKrxpRBosdIKFzxW_CT3KLZNf6q0HG9i01zxXp5CPBs"
 dns_tencent_add() {
   fulldomain=$1
