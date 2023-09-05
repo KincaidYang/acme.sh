@@ -3,24 +3,7 @@ Tencent_API="https://dnspod.tencentcloudapi.com"
 
 #Tencent_SecretId="AKIDz81d2cd22cdcdc2dcd1cc1d1A"
 #Tencent_SecretKey="Gu5t9abcabcaabcbabcbbbcbcbbccbbcb"
-echo "System Information:"
-echo "OS: $(uname -s)"
-echo "Kernel Release: $(uname -r)"
-echo "Kernel Version: $(uname -v)"
-echo "Machine Hardware: $(uname -m)"
-echo "Processor: $(uname -p)"
-echo "Hardware Platform: $(uname -i)"
-echo "Operating System: $(uname -o)"
 
-if command -v lsb_release >/dev/null 2>&1; then
-  echo "Distribution Information:"
-  echo "Distributor ID: $(lsb_release -i | cut -f2)"
-  echo "Description: $(lsb_release -d | cut -f2)"
-  echo "Release: $(lsb_release -r | cut -f2)"
-  echo "Codename: $(lsb_release -c | cut -f2)"
-else
-  echo "lsb_release command not found. Distribution information not available."
-fi
 #Usage: dns_tencent_add   _acme-challenge.www.domain.com   "XKrxpRBosdIKFzxW_CT3KLZNf6q0HG9i01zxXp5CPBs"
 dns_tencent_add() {
   fulldomain=$1
@@ -167,7 +150,7 @@ tencent_sha256() {
 tencent_hmac_sha256() {
   k=$1
   shift
-  hex_key=$(printf %b "$k" | _hex_dump | tr -d ' ')
+  hex_key=$(printf "%s" "$k&" | _hex_dump | tr -d " ")" | _base64)
   printf %b "$@" | _hmac sha256 "$hex_key" hex
 }
 
@@ -201,8 +184,7 @@ tencent_signature_v3() {
   credentialScope="$date/$service/tc3_request"
   stringToSign="$algorithm\n$timestamp\n$credentialScope\n$(tencent_sha256 "$canonicalRequest")"
 
-  hex_key=$(printf %b "TC3$secretKey" | _hex_dump | tr -d ' ')
-  secretDate=$(printf %b "$date" | _hmac sha256 "$hex_key" hex)
+  secretDate=$(tencent_hmac_sha256 "TC3$secretKey" "$date")
   secretService=$(tencent_hmac_sha256_hexkey "$secretDate" "$service")
   secretSigning=$(tencent_hmac_sha256_hexkey "$secretService" 'tc3_request')
   signature=$(tencent_hmac_sha256_hexkey "$secretSigning" "$stringToSign")
